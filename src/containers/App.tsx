@@ -1,5 +1,5 @@
 import './App.css';
-import {ItemsMenu} from '../types';
+import {ItemsMenu, OrderedItems} from "../types";
 import MenuItems from '../components/MenuItems/MenuItems';
 import Hamburger from '../assets/hamburger.png';
 import Cheeseburger from '../assets/cheeseburger.png';
@@ -7,6 +7,8 @@ import Fries from '../assets/fries.png';
 import Coffee from '../assets/coffee.png';
 import Tea from '../assets/tea.png';
 import Cola from '../assets/cola.png';
+import {useState} from "react";
+import OrderDetails from "../components/OrderedItems/OrderedItems";
 
 const App = () => {
   const Items: ItemsMenu[] = [
@@ -18,8 +20,40 @@ const App = () => {
     {id: ((Date.now() + Math.random().toString(36)) + 6), name: 'Cola', price: 40, image: Cola},
   ];
 
+  const [orders, setOrders] = useState<OrderedItems[]>([]);
+  const handleItemClick = (itemName: string, price: number) => {
+    const realOrder = orders.find((order) => order.name === itemName);
+    if (realOrder) {
+      const updatedOrders = orders.map((order) =>
+        order.name === itemName
+          ? { ...order, count: order.count + 1, price: order.price + price }
+          : order
+      );
+      setOrders(updatedOrders);
+    } else {
+      const newOrder = { id: Date.now().toString(), name: itemName, count: 1, price: price };
+      setOrders([...orders, newOrder]);
+    }
+  };
+
+  const getTotalSum = () => {
+    return orders.reduce((total, order) => {
+      return total + order.price;
+    }, 0);
+  };
+
+  const removeItem = (id: string | undefined) => {
+    if (id) {
+      setOrders(prevState => prevState.filter(item => item.id !== id));
+    }
+  };
+
   const itemButton = Items.map((item) => (
-    <MenuItems key={item.id} item={item}/>
+    <MenuItems key={item.id} item={item} handleItemClick={handleItemClick} />
+  ));
+
+  const orderedItems = orders.map((order) => (
+    <OrderDetails key={order.id} order={order} removeItem={removeItem} />
   ));
 
   return (
@@ -27,7 +61,8 @@ const App = () => {
       <div className='mainMenu'>
         <div className='OrderedItems'>
           <p className='textInfo'>Order details:</p>
-          <p>Please make some order!</p>
+          {orders.length > 0 ? <strong className='totalPrice'>Total price: {getTotalSum()} KGS </strong> : <p>Make an order!</p>}
+          {orderedItems}
         </div>
         <div className='MenuItems'>
           <strong>Add items: </strong>
@@ -39,4 +74,5 @@ const App = () => {
     </div>
   );
 };
+
 export default App;
