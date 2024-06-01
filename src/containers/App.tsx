@@ -60,12 +60,13 @@ const App = () => {
     <div className="appStyle">
       <div className='mainMenu'>
         <div className='OrderedItems'>
-          <p className='textInfo'>Order details:</p>
-          {orders.length > 0 ? <strong className='totalPrice'>Total price: {getTotalSum()} KGS </strong> : <p>Make an order!</p>}
+          <h2 className='textInfo'>Order details:</h2>
+          {orders.length > 0 ? <h2>Total price: {getTotalSum()} KGS </h2> :
+            <p className='ordered-text'>You are welcome to make an order from the Menu!</p>}
           {orderedItems}
         </div>
         <div className='MenuItems'>
-          <strong>Add items: </strong>
+          <h2 className='menu-title'>Add items: </h2>
           <div className='gridContainer'>
             {itemButton}
           </div>
