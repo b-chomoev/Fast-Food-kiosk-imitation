@@ -21,6 +21,7 @@ const App = () => {
   ];
 
   const [orders, setOrders] = useState<OrderedItems[]>([]);
+
   const handleItemClick = (itemName: string, price: number) => {
     const realOrder = orders.find((order) => order.name === itemName);
     if (realOrder) {
@@ -36,16 +37,26 @@ const App = () => {
     }
   };
 
+  const removeItem = (id: string | undefined, price: number) => {
+    const realOrder = orders.find((order) => order.id === id);
+    if (realOrder) {
+      if (realOrder.count > 1) {
+        const updatedOrders = orders.map((order) =>
+          order.id === id
+            ? { ...order, count: order.count - 1, price: order.price - (price / 2)}
+            : order
+        );
+        setOrders(updatedOrders);
+      } else {
+        setOrders(orders.filter(order => order.id !== id));
+      }
+    }
+  };
+
   const getTotalSum = () => {
     return orders.reduce((total, order) => {
       return total + order.price;
     }, 0);
-  };
-
-  const removeItem = (id: string | undefined) => {
-    if (id) {
-      setOrders(prevState => prevState.filter(item => item.id !== id));
-    }
   };
 
   const itemButton = Items.map((item) => (
